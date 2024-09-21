@@ -6,7 +6,7 @@ const { displayWatermark, logInfo, logSuccess, logWarning, logError, displaySess
 
 dotenv.config();
 
-const tokens = process.env.TOKENS.split(',');  // Get the tokens array from the environment variable
+const tokens = process.env.TOKENS.split(','); 
 let successCount = 0;
 let failureCount = 0;
 let totalPoints = 0;
@@ -122,13 +122,13 @@ async function getPointAfterStop(token) {
 }
 
 async function simulateAccountSession(token) {
-    logInfo(`Starting session for token: ${token.slice(0, 10)}...`); // Display partial token for clarity
+    logInfo(`Starting session for token: ${token.slice(0, 10)}...`); 
     try {
         const { user } = await getInfo(token);
         if (user) {
             while (true) {
                 logInfo("\n========== Starting new session ==========");
-                await simulateHumanSession(token);  // Pass the token to the session function
+                await simulateHumanSession(token); 
 
                 displaySessionSummary(totalPoints, successCount, failureCount);
 
@@ -154,17 +154,13 @@ async function getUncompletedQuests(token) {
     try {
         const response = await axios.get(url, { headers });
 
-        // Log the full response to verify its structure
         logInfo(`Full API response: ${JSON.stringify(response.data, null, 2)}`);
 
-        // Access the 'data' field from the response
         if (response.data && Array.isArray(response.data.data)) {
             const quests = response.data.data;
 
-            // Log all quests with their statuses
             logInfo(`All quests with statuses: ${quests.map(q => `ID: ${q.id}, Title: ${q.title}, Status: ${q.mission_status}`).join('\n')}`);
 
-            // Filter for quests that are ready to be claimed (mission_status === "0")
             const validQuests = quests.filter(q => q.mission_status === "0");
 
             if (validQuests.length > 0) {
@@ -194,20 +190,18 @@ async function getUncompletedQuests(token) {
 async function claimBonusQuest(token, missionId) {
     const url = 'https://api.foruai.io/v1/missions/validate';
 
-    // Headers sesuai dengan API
     const headers = {
         Authorization: `Bearer ${token}`,
         'x-foru-apikey': 'foru-private-aec4199767b805b22ce88a2399ea7730d998e5caff336fda19acb897cd9d47e2',
         'x-foru-signature': '680592cc5da460f47a610ac25281c3b498fa7d68446e056ac5c9bdbaae6500d1',
-        'x-foru-timestamp': Date.now().toString(),  // Stempel waktu dinamis
+        'x-foru-timestamp': Date.now().toString(),  
         'Content-Type': 'application/json',
         Accept: '*/*',
     };
 
-    // Body request dengan mission_id dan timestamp
     const data = {
         mission_id: missionId,
-        timestamp: Date.now().toString()  // Menggunakan timestamp dinamis
+        timestamp: Date.now().toString()  
     };
 
     try {
@@ -235,7 +229,7 @@ async function clearAllTasks(token) {
     const uncompletedQuests = await getUncompletedQuests(token);
 
     for (const quest of uncompletedQuests) {
-        await claimBonusQuest(token, quest.id); // Ensure you pass the correct quest ID
+        await claimBonusQuest(token, quest.id);
     }
 }
 
@@ -261,7 +255,7 @@ async function main() {
         }
     }
 
-    rl.close(); // Close the readline interface when done
+    rl.close(); 
 }
 
 main();
